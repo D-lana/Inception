@@ -1,0 +1,55 @@
+version: "3"
+
+services: # контейнеры Docker
+  nginx:
+    container_name: nginx
+    build: requirements/nginx/ # сборка образа/путь до нашего nginx
+    # image: nginx
+    restart: always
+    ports: 
+     - 443:443
+    volumes: 
+      - wp1:/var/www/
+    depends_on: [wordpress] # зависимость - ждет пока не подгрузятся прописанные сервисы (wordpress)
+    networks: [default]
+
+  wordpress:
+    container_name: wordpress
+    build: requirements/wordpress/
+    restart: always
+    networks: [default]
+    env_file: .env
+    volumes: 
+      - wp1:/var/www/
+    depends_on: [mariadb]
+
+  mariadb:
+    build: requirements/mariadb/
+    container_name: mariadb
+    restart: always # restart_policy - более глубокие настройки перезагрузки
+    volumes: 
+     - db1:/var/lib/mysql
+    networks: [default]
+    env_file: .env
+
+# volumes - хранилище для базы данных. Подключение папки внутри контейнера к папке на локальной машине,
+# для сохранения данных локально, и в случае падения подключения чтобы данные не потерялись
+# и подгрузились при новом запуске
+# при падении контйнера, копирует с локальной в контейнер все данные
+volumes:
+  db1:
+    name: db
+    driver: local
+    driver_opts:
+      type: none
+      o: bind # двойная связь, сохраняет файлы в на локальную машину и контейнер
+      device: /home/dlana/data/db
+  wp1:
+    name: wp
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/dlana/data/wp
+
+networks: { default: { driver: bridge } }
