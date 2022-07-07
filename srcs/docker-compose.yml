@@ -31,7 +31,19 @@ services: # контейнеры Docker
      - db1:/var/lib/mysql
     networks: [default]
     env_file: .env
-
+  
+  redis:
+    build: requirements/bonus/redis/
+    container_name: redis
+    restart: always
+    # volumes: 
+    #  - rd:/var/redis
+    networks: [default]
+    ports:
+      - "6379:6379"
+    env_file:
+      - .env
+    depends_on: [wordpress]
 # volumes - хранилище для базы данных. Подключение папки внутри контейнера к папке на локальной машине,
 # для сохранения данных локально, и в случае падения подключения чтобы данные не потерялись
 # и подгрузились при новом запуске

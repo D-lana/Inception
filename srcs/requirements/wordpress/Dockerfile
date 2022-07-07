@@ -16,6 +16,7 @@ RUN wp core download --path=/usr/src/wordpress --allow-root
 
 COPY www.conf /etc/php/7.3/fpm/pool.d/www.conf
 COPY wp_setup.sh /tmp/
+COPY wp-config.php /usr/src/wordpress
 
 RUN	chmod 775 /etc/php/7.3/fpm/pool.d/www.conf
 
