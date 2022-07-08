@@ -1,10 +1,11 @@
 
 YML	= srcs/docker-compose.yml
-USERNAME = dlana
+VOLUME_DB = /home/dlana/data/db
+VOLUME_WP = /home/dlana/data/wp
 
 all:
-	mkdir -p /home/${USERNAME}/data/db
-	mkdir -p /home/${USERNAME}/data/wp
+	mkdir -p ${VOLUME_DB}
+	mkdir -p ${VOLUME_WP}
 	chmod 775  $(YML)
 	docker-compose -f $(YML) build
 
@@ -19,7 +20,7 @@ ps:
 	docker-compose -f $(YML) ps
 
 images:
-	docker-compose - f $(YML) images
+	docker-compose -f $(YML) images
 
 fclean:
 	-docker stop $$(docker ps -qa)
@@ -27,8 +28,8 @@ fclean:
 	-docker rmi -f $$(docker images -qa)
 	-docker volume rm $$(docker volume ls -q)
 	-docker network rm $$(docker network ls -q) 2>/dev/null
-	-rm -rf /home/${USERNAME}/data/db
-	-rm -rf /home/${USERNAME}/data/wp
+	-rm -rf ${VOLUME_DB}
+	-rm -rf ${VOLUME_WP}
 	-docker system prune -f -a
 
-# du -sch /var/*
+# docker stop adminer && docker rm adminer && docker rmi srcs_adminer

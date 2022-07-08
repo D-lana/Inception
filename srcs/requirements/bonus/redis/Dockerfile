@@ -15,11 +15,11 @@ RUN	apt-get update && apt-get install redis -y redis && \
 	apt-get install -y procps && \
 	apt-get install -y php-redis
 
-# COPY serv-redis.sh ./
 COPY redis.conf etc/redis/redis.conf
-# RUN chmod 775 serv-redis.sh /etc/redis/redis.conf
-RUN sysctl -w net.core.somaxconn=65535 --allow-root && \
-	sysctl vm.overcommit_memory=1 --allow-root
+
+# RUN sysctl -w net.core.somaxconn=65535 --allow-root && \
+# 	sysctl vm.overcommit_memory=1 --allow-root && \
+# 	echo never > /sys/kernel/mm/transparent_hugepage/enabled --allow-root
 
 EXPOSE 6379
 

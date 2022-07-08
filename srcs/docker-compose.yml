@@ -32,6 +32,7 @@ services: # контейнеры Docker
     networks: [default]
     env_file: .env
   
+  #bonus
   redis:
     build: requirements/bonus/redis/
     container_name: redis
@@ -40,10 +41,21 @@ services: # контейнеры Docker
     #  - rd:/var/redis
     networks: [default]
     ports:
-      - "6379:6379"
+      - 6379:6379
     env_file:
       - .env
     depends_on: [wordpress]
+  
+  adminer:
+    build: requirements/bonus/adminer/
+    container_name: adminer
+    restart: always
+    environment:
+      ADMINER_DEFAULT_SERVER: mariadb
+    ports:
+      - 8080:8080
+    depends_on: [mariadb]
+
 # volumes - хранилище для базы данных. Подключение папки внутри контейнера к папке на локальной машине,
 # для сохранения данных локально, и в случае падения подключения чтобы данные не потерялись
 # и подгрузились при новом запуске
@@ -64,4 +76,6 @@ volumes:
       o: bind
       device: /home/dlana/data/wp
 
-networks: { default: { driver: bridge } }
+networks: 
+  default:
+    driver: bridge

@@ -5,7 +5,7 @@ LABEL maintainer="value"
 
 # выполняется во время сборки контейнера
 # -y -
-RUN	apt update && apt install mariadb-server -y && rm -rf /var/lib/apt/lists/*; \
+RUN	apt-get update && apt-get install mariadb-server -y && rm -rf /var/lib/apt/lists/*; \
     sed -i 's/^bind-address/#&/' /etc/mysql/mariadb.conf.d/50-server.cnf
 
 COPY ./tools/mariadb.sh /tmp/
