@@ -8,6 +8,7 @@ all:
 	mkdir -p ${VOLUME_WP}
 	chmod 775  $(YML)
 	docker-compose -f $(YML) build
+	docker-compose -f $(YML) up -d
 
 # флаг -d --detach - запускает контейнер в фоновом режиме
 up:

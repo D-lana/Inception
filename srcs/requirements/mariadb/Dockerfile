@@ -1,7 +1,7 @@
 # указываем образ
 FROM debian:buster
 
-LABEL maintainer="value"
+# LABEL maintainer="value"
 
 # выполняется во время сборки контейнера
 # -y -

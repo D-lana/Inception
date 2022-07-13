@@ -24,7 +24,6 @@ wp redis enable --force --path=/var/www/wordpress --allow-root
 
 /usr/sbin/php-fpm7.3 --nodaemonize
 
-
 #!/bin/bash
 # mkdir -p /run/php
 # mkdir -p var/www

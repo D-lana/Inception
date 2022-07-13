@@ -21,7 +21,9 @@ services: # контейнеры Docker
     env_file: .env
     volumes: 
       - wp1:/var/www/
-    depends_on: [mariadb]
+    depends_on: 
+      mariadb:
+        condition: service_healthy
 
   mariadb:
     build: requirements/mariadb/
@@ -31,6 +33,11 @@ services: # контейнеры Docker
      - db1:/var/lib/mysql
     networks: [default]
     env_file: .env
+    healthcheck:
+      test: ['CMD', 'mariadb', '-psuper8']
+      interval: 3s
+      retries: 5
+      start_period: 5s
   
   #bonus
   redis:
@@ -50,22 +57,25 @@ services: # контейнеры Docker
     build: requirements/bonus/adminer/ 
     # image: adminer
     container_name: adminer
-    restart: always
-    env_file:
-      - .env
+    # restart: always
+    # env_file:
+    #   - .env
+    # environment:
+    #   - ADMINER_DEFAULT_SERVER=mariadb
     # ports:
     #   - 8080:8080
-    depends_on: [mariadb]
-    # volumes: [wp1:/var/www/]
+    depends_on: [wordpress]
+    volumes: [wp1:/var/www/]
     networks: [default]
 
-  python:
-    build: requirements/bonus/python-app/ 
-    container_name: python
-    restart: always
-    env_file:
-      - .env
-    networks: [default]  
+
+  # python:
+  #   build: requirements/bonus/python-app/
+  #   container_name: python
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   networks: [default]
 
 # volumes - хранилище для базы данных. Подключение папки внутри контейнера к папке на локальной машине,
 # для сохранения данных локально, и в случае падения подключения чтобы данные не потерялись
