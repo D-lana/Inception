@@ -4,12 +4,9 @@ services: # контейнеры Docker
   nginx:
     container_name: nginx
     build: requirements/nginx/ # сборка образа/путь до нашего nginx
-    # image: nginx
     restart: always
-    ports: 
-     - 443:443
-    volumes: 
-      - wp1:/var/www/
+    ports: [443:443]
+    volumes: [wp:/var/www/]
     depends_on: [wordpress] # зависимость - ждет пока не подгрузятся прописанные сервисы (wordpress)
     networks: [default]
 
@@ -19,9 +16,8 @@ services: # контейнеры Docker
     restart: always
     networks: [default]
     env_file: .env
-    volumes: 
-      - wp1:/var/www/
-    depends_on: 
+    volumes: [wp:/var/www/]
+    depends_on:
       mariadb:
         condition: service_healthy
 
@@ -29,67 +25,48 @@ services: # контейнеры Docker
     build: requirements/mariadb/
     container_name: mariadb
     restart: always # restart_policy - более глубокие настройки перезагрузки
-    volumes: 
-     - db1:/var/lib/mysql
+    volumes: [db:/var/lib/mysql]
     networks: [default]
     env_file: .env
     healthcheck:
-      test: ['CMD', 'mariadb', '-psuper8']
-      interval: 3s
+      test: ['CMD', 'mariadb', '-p$DB_PASSWORD']
+      interval: 5s
       retries: 5
-      start_period: 5s
-  
+      start_period: 10s
+
   #bonus
   redis:
     build: requirements/bonus/redis/
     container_name: redis
     restart: always
-    # volumes: 
-    #  - rd:/var/redis
     networks: [default]
-    ports:
-      - 6379:6379
-    env_file:
-      - .env
+    ports: [6379:6379]
+    env_file: .env
     depends_on: [wordpress]
   
   adminer:
     build: requirements/bonus/adminer/ 
-    # image: adminer
     container_name: adminer
-    # restart: always
-    # env_file:
-    #   - .env
-    # environment:
-    #   - ADMINER_DEFAULT_SERVER=mariadb
-    # ports:
-    #   - 8080:8080
     depends_on: [wordpress]
-    volumes: [wp1:/var/www/]
+    volumes: [wp:/var/www/]
     networks: [default]
 
+  python:
+    build: requirements/bonus/python-app/
+    container_name: python
+    restart: always
+    env_file: .env
+    networks: [default]
 
-  # python:
-  #   build: requirements/bonus/python-app/
-  #   container_name: python
-  #   restart: always
-  #   env_file:
-  #     - .env
-  #   networks: [default]
-
-# volumes - хранилище для базы данных. Подключение папки внутри контейнера к папке на локальной машине,
-# для сохранения данных локально, и в случае падения подключения чтобы данные не потерялись
-# и подгрузились при новом запуске
-# при падении контйнера, копирует с локальной в контейнер все данные
 volumes:
-  db1:
+  db:
     name: db
     driver: local
     driver_opts:
       type: none
       o: bind # двойная связь, сохраняет файлы в на локальную машину и контейнер
       device: /home/dlana/data/db
-  wp1:
+  wp:
     name: wp
     driver: local
     driver_opts:

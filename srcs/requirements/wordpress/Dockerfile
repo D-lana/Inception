@@ -12,14 +12,13 @@ RUN apt-get update -y && \
 
 RUN wp core download --path=/usr/src/wordpress --allow-root
 
-COPY www.conf /etc/php/7.3/fpm/pool.d/www.conf
-COPY wp_setup.sh /tmp/
-COPY wp-config.php /usr/src/wordpress
+COPY /tools/www.conf /etc/php/7.3/fpm/pool.d/www.conf
+COPY /tools/wp_setup.sh /tmp/
+COPY /tools/wp-config.php /usr/src/wordpress
 
 RUN	chmod 775 /etc/php/7.3/fpm/pool.d/www.conf
 
-VOLUME [ "/var/www/" ]
-
 EXPOSE 9000
+VOLUME [ "/var/www/" ]
 
 ENTRYPOINT bash /tmp/wp_setup.sh

@@ -1,7 +1,11 @@
 FROM debian:buster
 
-RUN	apt-get update && apt-get install python
+RUN	apt-get update && apt-get install -y python
 
-COPY main.py ./
+COPY /tools/my_site.html ./
 
-CMD python main.py
+# COPY /tools/nginx.conf /etc/nginx/sites-available/my_site.conf
+
+# CMD python main.py
+
+CMD sleep 20 && cp my_site.html /var/www/html/my_site

@@ -1,15 +1,11 @@
-# переписать!!!
-# указываем образ
 FROM debian:buster
 
 LABEL maintainer="value"
 
-# выполняется во время сборки контейнера
 RUN apt-get update && apt-get install -y nginx openssl && rm -rf /var/lib/apt/lists/*
 
-VOLUME [ "/var/www/" ]
-
 COPY /tools/nginx.conf /etc/nginx/sites-available/default
+COPY /tools/my_site.conf /etc/nginx/sites-available/my_site.conf
 
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:4096 \
 		-keyout /etc/ssl/private/nginx.key \
@@ -19,6 +15,8 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:4096 \
 		chown -R www-data /var/www/;
 
 EXPOSE 443
+VOLUME [ "/var/www/" ]
 
-# этой команде присваивается номер процесса №1
+# RUN ls -s /etc/nginx/sites-available/my_site.conf /etc/nginx/sites-enabled/my_site.conf 
+
 ENTRYPOINT nginx -g 'daemon off;'
