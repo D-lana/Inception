@@ -30,33 +30,35 @@ services: # контейнеры Docker
     env_file: .env
     healthcheck:
       test: ['CMD', 'mariadb', '-p$DB_PASSWORD']
-      interval: 5s
+      interval: 10s
       retries: 5
-      start_period: 10s
+      start_period: 15s
 
   #bonus
-  redis:
-    build: requirements/bonus/redis/
-    container_name: redis
-    restart: always
-    networks: [default]
-    ports: [6379:6379]
-    env_file: .env
-    depends_on: [wordpress]
+  # redis:
+  #   build: requirements/bonus/redis/
+  #   container_name: redis
+  #   restart: always
+  #   networks: [default]
+  #   ports: [6379:6379]
+  #   env_file: .env
+  #   depends_on: [wordpress]
   
-  adminer:
-    build: requirements/bonus/adminer/ 
-    container_name: adminer
-    depends_on: [wordpress]
-    volumes: [wp:/var/www/]
-    networks: [default]
+  # adminer:
+  #   build: requirements/bonus/adminer/ 
+  #   container_name: adminer
+  #   depends_on: [wordpress]
+  #   volumes: [wp:/var/www/]
+  #   networks: [default]
 
-  python:
-    build: requirements/bonus/python-app/
-    container_name: python
+  my_site:
+    build: requirements/bonus/my_site/
+    container_name: my_site
     restart: always
     env_file: .env
     networks: [default]
+    volumes: [wp:/var/www/]
+    depends_on: [nginx]
 
 volumes:
   db:
