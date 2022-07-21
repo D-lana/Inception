@@ -8,7 +8,7 @@ RUN apt-get update -y && \
     wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
     chmod +x wp-cli.phar && \
     mv wp-cli.phar /usr/local/bin/wp && \
-    apt remove -y wget
+    apt-get remove -y wget
 
 RUN wp core download --path=/usr/src/wordpress --allow-root
 

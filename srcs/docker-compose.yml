@@ -4,17 +4,19 @@ services: # контейнеры Docker
   nginx:
     container_name: nginx
     build: requirements/nginx/ # сборка образа/путь до нашего nginx
+    image: nginx
     restart: always
     ports: [443:443]
     volumes: [wp:/var/www/]
     depends_on: [wordpress] # зависимость - ждет пока не подгрузятся прописанные сервисы (wordpress)
-    networks: [default]
+    networks: [inception]
 
   wordpress:
     container_name: wordpress
     build: requirements/wordpress/
+    image: wordpress
     restart: always
-    networks: [default]
+    networks: [inception]
     env_file: .env
     volumes: [wp:/var/www/]
     depends_on:
@@ -22,41 +24,44 @@ services: # контейнеры Docker
         condition: service_healthy
 
   mariadb:
-    build: requirements/mariadb/
     container_name: mariadb
+    build: requirements/mariadb/
+    image: mariadb
     restart: always # restart_policy - более глубокие настройки перезагрузки
     volumes: [db:/var/lib/mysql]
-    networks: [default]
+    networks: [inception]
     env_file: .env
     healthcheck:
       test: ['CMD', 'mariadb', '-p$DB_PASSWORD']
-      interval: 10s
+      interval: 7s
       retries: 5
-      start_period: 15s
+      start_period: 10s
 
-  #bonus
-  # redis:
-  #   build: requirements/bonus/redis/
-  #   container_name: redis
-  #   restart: always
-  #   networks: [default]
-  #   ports: [6379:6379]
-  #   env_file: .env
-  #   depends_on: [wordpress]
+  # bonus
+  redis:
+    build: requirements/bonus/redis/
+    container_name: redis
+    image: redis
+    restart: always
+    networks: [inception]
+    ports: [6379:6379]
+    env_file: .env
+    depends_on: [wordpress]
   
-  # adminer:
-  #   build: requirements/bonus/adminer/ 
-  #   container_name: adminer
-  #   depends_on: [wordpress]
-  #   volumes: [wp:/var/www/]
-  #   networks: [default]
+  adminer:
+    build: requirements/bonus/adminer/ 
+    container_name: adminer
+    image: adminer
+    depends_on: [wordpress]
+    volumes: [wp:/var/www/]
+    networks: [inception]
 
   my_site:
     build: requirements/bonus/my_site/
     container_name: my_site
-    restart: always
+    image: my_site
     env_file: .env
-    networks: [default]
+    networks: [inception]
     volumes: [wp:/var/www/]
     depends_on: [nginx]
 
@@ -77,5 +82,6 @@ volumes:
       device: /home/dlana/data/wp
 
 networks: 
-  default:
+  inception:
+    name: inception
     driver: bridge
